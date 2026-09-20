@@ -1,69 +1,79 @@
-import Image from "next/image";
+import { CarFront, GraduationCap } from "lucide-react";
+
+import { ChapterGrid } from "@/components/home/ChapterGrid";
+import { ExamCard } from "@/components/home/ExamCard";
+import { MistakesCard } from "@/components/home/MistakesCard";
+import { ProgressCard } from "@/components/home/ProgressCard";
+import { QuickPractice } from "@/components/home/QuickPractice";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen bg-[#f7f8fa]">
+      <header className="border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-white">
+              <CarFront size={20} />
+            </div>
+
+            <div>
+              <div className="text-sm font-black tracking-tight text-slate-950">
+                Clase B
+              </div>
+              <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                Chile
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden items-center gap-2 text-xs font-semibold text-slate-500 sm:flex">
+            <GraduationCap size={17} />
+            Entrena. Aprende. Aprueba.
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-6xl px-5 pb-16 pt-10 sm:px-8 sm:pt-14">
+        <section className="mb-9">
+          <p className="text-sm font-bold text-blue-600">
+            Prepárate a tu ritmo
           </p>
+
+          <h1 className="mt-2 max-w-3xl text-4xl font-black tracking-[-0.04em] text-slate-950 sm:text-5xl">
+            Tu examen Clase B,
+            <span className="text-slate-400"> sin sorpresas.</span>
+          </h1>
+
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
+            Practica con preguntas basadas en el Libro para la
+            Conducción en Chile, identifica tus errores y llega mejor
+            preparado al examen.
+          </p>
+        </section>
+
+        <div className="grid gap-5 lg:grid-cols-[1.35fr_0.65fr]">
+          <ExamCard />
+
+          <div className="grid gap-5">
+            <MistakesCard />
+            <ProgressCard />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="mt-5">
+          <QuickPractice />
         </div>
-      </main>
-    </div>
+
+        <div className="mt-12">
+          <ChapterGrid />
+        </div>
+
+        <footer className="mt-16 border-t border-slate-200 pt-6 text-xs leading-5 text-slate-400">
+          Simulador independiente de estudio basado en el Libro para
+          la Conducción en Chile. No corresponde al examen oficial ni
+          utiliza el banco oficial de preguntas.
+        </footer>
+      </div>
+    </main>
   );
 }

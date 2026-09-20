@@ -1,0 +1,301 @@
+[
+  {
+    "id": "normas-001",
+    "chapter": "normas-circulacion",
+    "topic": "preferencia-paso",
+    "question": "En una intersección no regulada, ¿a qué vehículo debes ceder el derecho preferente de paso?",
+    "type": "single",
+    "options": [
+      {
+        "id": "a",
+        "text": "Al vehículo que se aproxima por la izquierda"
+      },
+      {
+        "id": "b",
+        "text": "Al vehículo que se aproxima por la derecha"
+      },
+      {
+        "id": "c",
+        "text": "Al vehículo de mayor tamaño"
+      },
+      {
+        "id": "d",
+        "text": "Al vehículo que circule a mayor velocidad"
+      }
+    ],
+    "correctAnswers": ["b"],
+    "explanation": "En una intersección no regulada, debes ceder el derecho preferente de paso al vehículo que se aproxima por tu derecha.",
+    "points": 1,
+    "difficulty": "medium",
+    "tags": [
+      "prioridad",
+      "intersecciones"
+    ],
+    "source": {
+      "title": "Libro para la Conducción en Chile"
+    }
+  },
+  {
+    "id": "normas-002",
+    "chapter": "normas-circulacion",
+    "topic": "velocidad",
+    "question": "¿Cuál es la velocidad máxima general para vehículos livianos en una zona urbana, salvo que exista señalización que indique otra velocidad?",
+    "type": "single",
+    "options": [
+      {
+        "id": "a",
+        "text": "30 km/h"
+      },
+      {
+        "id": "b",
+        "text": "40 km/h"
+      },
+      {
+        "id": "c",
+        "text": "50 km/h"
+      },
+      {
+        "id": "d",
+        "text": "60 km/h"
+      }
+    ],
+    "correctAnswers": ["c"],
+    "explanation": "La velocidad máxima general en zona urbana es de 50 km/h, salvo que exista una regulación específica que establezca otro límite.",
+    "points": 1,
+    "difficulty": "easy",
+    "tags": [
+      "velocidad",
+      "zona-urbana"
+    ],
+    "source": {
+      "title": "Libro para la Conducción en Chile"
+    }
+  },
+  {
+    "id": "normas-003",
+    "chapter": "normas-circulacion",
+    "topic": "adelantamiento",
+    "question": "Al adelantar a un ciclo, ¿qué distancia lateral mínima debes mantener?",
+    "type": "single",
+    "options": [
+      {
+        "id": "a",
+        "text": "50 centímetros"
+      },
+      {
+        "id": "b",
+        "text": "1 metro"
+      },
+      {
+        "id": "c",
+        "text": "1,5 metros"
+      },
+      {
+        "id": "d",
+        "text": "2,5 metros"
+      }
+    ],
+    "correctAnswers": ["c"],
+    "explanation": "Al adelantar a un ciclo se debe mantener una distancia lateral mínima de 1,5 metros.",
+    "points": 1,
+    "difficulty": "medium",
+    "tags": [
+      "ciclistas",
+      "adelantamiento",
+      "distancia"
+    ],
+    "source": {
+      "title": "Libro para la Conducción en Chile"
+    }
+  },
+  {
+    "id": "emergencia-001",
+    "chapter": "informaciones-importantes",
+    "topic": "siniestros",
+    "question": "Si participas en un siniestro de tránsito en el que resultan personas lesionadas o fallecidas, ¿qué acciones debes realizar?",
+    "type": "multiple",
+    "options": [
+      {
+        "id": "a",
+        "text": "Detener tu marcha"
+      },
+      {
+        "id": "b",
+        "text": "Prestar la ayuda que sea posible"
+      },
+      {
+        "id": "c",
+        "text": "Dar cuenta a la autoridad policial"
+      },
+      {
+        "id": "d",
+        "text": "Continuar el viaje si consideras que no tuviste la culpa"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b",
+      "c"
+    ],
+    "explanation": "Ante un siniestro con personas lesionadas o fallecidas debes detener tu marcha, prestar la ayuda que sea posible y dar cuenta del hecho a la autoridad policial. Esta obligación existe independientemente de la responsabilidad en el siniestro.",
+    "points": 2,
+    "difficulty": "hard",
+    "tags": [
+      "siniestros",
+      "emergencia"
+    ],
+    "source": {
+      "title": "Libro para la Conducción en Chile",
+      "page": 136
+    }
+  },
+  {
+    "id": "emergencia-002",
+    "chapter": "informaciones-importantes",
+    "topic": "primeros-auxilios",
+    "question": "Una persona motociclista resulta lesionada en un siniestro y permanece con su casco puesto. ¿Qué debes hacer?",
+    "type": "single",
+    "options": [
+      {
+        "id": "a",
+        "text": "Quitárselo inmediatamente para facilitar la respiración"
+      },
+      {
+        "id": "b",
+        "text": "Quitárselo solamente si permanece consciente"
+      },
+      {
+        "id": "c",
+        "text": "No quitarle el casco"
+      },
+      {
+        "id": "d",
+        "text": "Aflojarlo y retirarlo lentamente"
+      }
+    ],
+    "correctAnswers": ["c"],
+    "explanation": "No debes quitar el casco a una persona motociclista o ciclista lesionada, ya que al hacerlo podrías provocar o agravar una lesión en la columna cervical.",
+    "points": 1,
+    "difficulty": "medium",
+    "tags": [
+      "primeros-auxilios",
+      "motociclistas"
+    ],
+    "source": {
+      "title": "Libro para la Conducción en Chile",
+      "page": 137
+    }
+  },
+  {
+    "id": "emergencia-003",
+    "chapter": "informaciones-importantes",
+    "topic": "emergencias",
+    "question": "¿Cuál es el número telefónico de Carabineros?",
+    "type": "single",
+    "options": [
+      {
+        "id": "a",
+        "text": "131"
+      },
+      {
+        "id": "b",
+        "text": "132"
+      },
+      {
+        "id": "c",
+        "text": "133"
+      },
+      {
+        "id": "d",
+        "text": "134"
+      }
+    ],
+    "correctAnswers": ["c"],
+    "explanation": "Los números principales indicados son: 131 para SAMU/ambulancia, 132 para Bomberos y 133 para Carabineros.",
+    "points": 1,
+    "difficulty": "easy",
+    "tags": [
+      "emergencia",
+      "numeros-emergencia"
+    ],
+    "source": {
+      "title": "Libro para la Conducción en Chile",
+      "page": 136
+    }
+  },
+  {
+    "id": "nochats-001",
+    "chapter": "informaciones-importantes",
+    "topic": "ley-no-chat",
+    "question": "Estás detenido frente a una luz roja. ¿Puedes tomar y manipular tu teléfono móvil mientras esperas que cambie a verde?",
+    "type": "single",
+    "options": [
+      {
+        "id": "a",
+        "text": "Sí, porque el vehículo está momentáneamente detenido"
+      },
+      {
+        "id": "b",
+        "text": "Sí, pero solamente para revisar el GPS"
+      },
+      {
+        "id": "c",
+        "text": "No, la prohibición también se aplica mientras esperas en una luz roja"
+      },
+      {
+        "id": "d",
+        "text": "Sí, siempre que mantengas el freno presionado"
+      }
+    ],
+    "correctAnswers": ["c"],
+    "explanation": "La Ley No Chat prohíbe manipular el dispositivo incluso mientras la persona conductora espera en una luz roja, en un taco o frente a una señal PARE.",
+    "points": 2,
+    "difficulty": "medium",
+    "tags": [
+      "ley-no-chat",
+      "distracciones"
+    ],
+    "source": {
+      "title": "Libro para la Conducción en Chile",
+      "page": 141
+    }
+  },
+  {
+    "id": "frenos-001",
+    "chapter": "informaciones-importantes",
+    "topic": "abs",
+    "question": "Durante una frenada de emergencia en un vehículo equipado con ABS, ¿cómo debes actuar sobre el pedal de freno?",
+    "type": "single",
+    "options": [
+      {
+        "id": "a",
+        "text": "Presionarlo y soltarlo repetidamente"
+      },
+      {
+        "id": "b",
+        "text": "Presionarlo suavemente durante toda la frenada"
+      },
+      {
+        "id": "c",
+        "text": "Presionarlo enérgicamente y mantener la máxima presión"
+      },
+      {
+        "id": "d",
+        "text": "Evitar utilizarlo y reducir únicamente las marchas"
+      }
+    ],
+    "correctAnswers": ["c"],
+    "explanation": "Con ABS debes pisar enérgicamente el pedal y mantener la máxima presión. El sistema se encarga automáticamente de liberar las ruedas que puedan bloquearse.",
+    "points": 1,
+    "difficulty": "medium",
+    "tags": [
+      "frenos",
+      "abs",
+      "emergencia"
+    ],
+    "source": {
+      "title": "Libro para la Conducción en Chile",
+      "page": 145
+    }
+  }
+]
