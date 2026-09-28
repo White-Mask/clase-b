@@ -31,3 +31,61 @@ a {
 button {
   font: inherit;
 }
+
+::selection {
+  background: #dbeafe;
+  color: #172554;
+}
+
+@keyframes soft-pop {
+  0% {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.soft-pop {
+  animation: soft-pop 320ms ease-out both;
+}
+
+/* PWA / mobile safe areas */
+
+html {
+  background: #f8fafc;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-x {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  touch-action: manipulation;
+}

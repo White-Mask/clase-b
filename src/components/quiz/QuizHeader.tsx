@@ -1,8 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { motion } from "motion/react";
-import { X } from "lucide-react";
+import {
+  motion,
+} from "motion/react";
+import {
+  X,
+} from "lucide-react";
+
+import { SegmentedProgress } from "@/components/quiz/SegmentedProgress";
 
 type QuizHeaderProps = {
   title: string;
@@ -19,13 +25,11 @@ export function QuizHeader({
 }: QuizHeaderProps) {
   const router = useRouter();
 
-  const progress =
-    total === 0 ? 0 : (answered / total) * 100;
-
   function handleExit() {
-    const shouldExit = window.confirm(
-      "¿Quieres salir? Tus respuestas de este intento no se enviarán."
-    );
+    const shouldExit =
+      window.confirm(
+        "¿Quieres salir de esta práctica?"
+      );
 
     if (shouldExit) {
       router.push("/");
@@ -33,45 +37,34 @@ export function QuizHeader({
   }
 
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto max-w-4xl px-5 py-4 sm:px-8">
+    <header className="sticky top-0 z-30 bg-[#f8fafc]/95 backdrop-blur-xl">
+      <div className="mx-auto max-w-[760px] px-4 pb-2.5 pt-3 min-[390px]:px-5 sm:px-8 sm:pb-3 sm:pt-5">
         <div className="flex items-center gap-4">
-          <button
+          <motion.button
             type="button"
             onClick={handleExit}
-            aria-label="Salir del quiz"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-900"
+            whileTap={{
+              scale: 0.9,
+            }}
+            aria-label="Salir"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-900"
           >
             <X size={21} />
-          </button>
+          </motion.button>
 
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-4">
-              <p className="truncate text-sm font-extrabold text-slate-900">
-                {title}
-              </p>
+          <SegmentedProgress
+            current={answered}
+            total={total}
+          />
 
-              <p className="shrink-0 text-xs font-bold text-slate-400">
-                {current} / {total}
-              </p>
-            </div>
-
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-              <motion.div
-                className="h-full rounded-full bg-blue-600"
-                initial={false}
-                animate={{
-                  width: `${progress}%`,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 120,
-                  damping: 20,
-                }}
-              />
-            </div>
-          </div>
+          <span className="min-w-[44px] text-right text-xs font-black text-slate-400">
+            {current}/{total}
+          </span>
         </div>
+
+        <p className="mt-2 truncate pl-14 text-[10px] font-black uppercase tracking-[0.12em] text-slate-300">
+          {title}
+        </p>
       </div>
     </header>
   );

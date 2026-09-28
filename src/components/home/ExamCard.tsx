@@ -4,118 +4,167 @@ import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import {
   ArrowRight,
-  Clock3,
-  Trophy,
+  ClipboardCheck,
+  Info,
 } from "lucide-react";
 
-import { CLASS_B_EXAM } from "@/lib/exam-config";
 import { questions } from "@/lib/questions";
-import { startQuiz } from "@/lib/start-quiz";
+import {
+  buildExam,
+  canBuildFullExam,
+} from "@/lib/exam";
+import { startExamSession } from "@/lib/start-quiz";
 
 export function ExamCard() {
   const router = useRouter();
 
-  const availableQuestions = Math.min(
-    CLASS_B_EXAM.questionCount,
-    questions.length
+  const ready =
+    canBuildFullExam(questions);
+
+  const progress = Math.min(
+    Math.round(
+      (questions.length / 35) * 100
+    ),
+    100
   );
 
   function handleStart() {
-    startQuiz({
-      questions,
-      amount: CLASS_B_EXAM.questionCount,
-      mode: "exam",
-      title: "Simulacro Clase B",
-    });
+    const exam =
+      buildExam(questions);
+
+    startExamSession(
+      exam.questions,
+      exam.isComplete
+    );
 
     router.push("/quiz");
   }
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45 }}
-      whileHover={{ y: -4 }}
-      className="relative overflow-hidden rounded-[32px] bg-slate-950 p-7 text-white shadow-xl sm:p-9"
+      initial={{
+        opacity: 0,
+        y: 16,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        delay: 0.1,
+      }}
+      className="overflow-hidden rounded-[28px] border-2 border-blue-200 bg-blue-50"
     >
-      <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-blue-500/20 blur-3xl" />
-      <div className="absolute -bottom-24 left-1/3 h-52 w-52 rounded-full bg-violet-500/20 blur-3xl" />
-
-      <div className="relative">
-        <div className="mb-7 flex items-center justify-between">
-          <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-white/80">
-            Simulacro
-          </span>
-
-          <div className="flex items-center gap-2 text-sm text-white/60">
-            <Clock3 size={16} />
-            Examen Clase B
+      <div className="p-6 sm:p-7">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white">
+            <ClipboardCheck
+              size={23}
+              strokeWidth={2.5}
+            />
           </div>
+
+          {ready ? (
+            <span className="rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-700">
+              Oficial
+            </span>
+          ) : (
+            <span className="rounded-full bg-white px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">
+              Preview
+            </span>
+          )}
         </div>
 
-        <div className="max-w-xl">
-          <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
-            Pon a prueba lo que sabes.
-          </h2>
+        <p className="mt-5 text-xs font-black uppercase tracking-[0.14em] text-blue-600">
+          Simulacro
+        </p>
 
-          <p className="mt-3 max-w-lg text-sm leading-6 text-white/65 sm:text-base">
-            Practica con un simulacro de 35
-            preguntas y descubre si alcanzarías
-            el puntaje necesario para aprobar.
-          </p>
-        </div>
+        <h2 className="mt-1 text-2xl font-black tracking-[-0.025em] text-slate-950">
+          Examen Clase B
+        </h2>
 
-        <div className="mt-8 grid grid-cols-3 gap-3">
-          <Stat
+        <p className="mt-2 max-w-md text-sm font-medium leading-6 text-slate-500">
+          {ready
+            ? "35 preguntas, 38 puntos y resultado oficial al finalizar."
+            : "Puedes probar la experiencia completa mientras construimos el banco oficial."}
+        </p>
+
+        <div className="mt-6 grid grid-cols-3 gap-2">
+          <ExamStat
             value="35"
             label="preguntas"
           />
-
-          <Stat
+          <ExamStat
             value="38"
-            label="puntos máx."
+            label="puntos"
           />
-
-          <Stat
+          <ExamStat
             value="33"
-            label="para aprobar"
+            label="apruebas"
           />
         </div>
 
-        <button
-          type="button"
-          onClick={handleStart}
-          className="group mt-8 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-4 text-sm font-extrabold text-slate-950 transition hover:bg-slate-100 sm:w-auto"
-        >
-          Comenzar simulacro
+        {!ready && (
+          <div className="mt-5 rounded-2xl border border-blue-200 bg-white/80 p-4">
+            <div className="flex items-start gap-3">
+              <Info
+                size={18}
+                className="mt-0.5 shrink-0 text-blue-500"
+              />
 
-          <ArrowRight
-            size={18}
-            className="transition-transform group-hover:translate-x-1"
-          />
-        </button>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-black text-slate-900">
+                  Banco en desarrollo
+                </p>
 
-        {questions.length <
-          CLASS_B_EXAM.questionCount && (
-          <p className="mt-4 text-xs leading-5 text-amber-200/70">
-            Versión de desarrollo: actualmente
-            probará {availableQuestions} preguntas.
-            Cuando completemos el banco utilizará
-            las 35.
-          </p>
+                <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+                  {questions.length} de 35 preguntas cargadas.
+                </p>
+
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+                  <motion.div
+                    initial={{
+                      width: 0,
+                    }}
+                    animate={{
+                      width: `${progress}%`,
+                    }}
+                    transition={{
+                      duration: 0.8,
+                    }}
+                    className="h-full rounded-full bg-blue-600"
+                  />
+                </div>
+
+                <p className="mt-2 text-[11px] font-bold text-slate-400">
+                  {progress}% completado
+                </p>
+              </div>
+            </div>
+          </div>
         )}
 
-        <div className="mt-5 flex items-center gap-2 text-xs text-white/45">
-          <Trophy size={14} />
-          Necesitas 33 de 38 puntos para aprobar
-        </div>
+        <motion.button
+          type="button"
+          onClick={handleStart}
+          whileTap={{
+            y: 3,
+            scale: 0.99,
+          }}
+          className="mt-6 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border-2 border-blue-800 bg-blue-600 px-5 text-sm font-black text-white shadow-[0_4px_0_#1e40af] transition hover:-translate-y-0.5 hover:bg-blue-700 active:translate-y-1 active:shadow-none"
+        >
+          {ready
+            ? "Comenzar simulacro"
+            : "Probar simulacro"}
+
+          <ArrowRight size={18} />
+        </motion.button>
       </div>
     </motion.section>
   );
 }
 
-function Stat({
+function ExamStat({
   value,
   label,
 }: {
@@ -123,14 +172,14 @@ function Stat({
   label: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 backdrop-blur-sm">
-      <div className="text-xl font-black sm:text-2xl">
+    <div className="rounded-2xl bg-white/80 px-2 py-3 text-center">
+      <p className="text-lg font-black text-slate-950">
         {value}
-      </div>
+      </p>
 
-      <div className="mt-1 text-[11px] font-medium text-white/50 sm:text-xs">
+      <p className="mt-0.5 text-[10px] font-bold text-slate-400 sm:text-xs">
         {label}
-      </div>
+      </p>
     </div>
   );
 }

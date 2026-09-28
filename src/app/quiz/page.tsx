@@ -3,69 +3,89 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { AppLoading } from "@/components/ui/AppLoading";
+import { BlockCelebration } from "@/components/quiz/BlockCelebration";
+import { isAnswerCorrect } from "@/lib/quiz";
 import { QuestionCard } from "@/components/quiz/QuestionCard";
-import { QuestionNavigator } from "@/components/quiz/QuestionNavigator";
+import { QuestionOverview } from "@/components/quiz/QuestionOverview";
+import { QuizFooter } from "@/components/quiz/QuizFooter";
 import { QuizHeader } from "@/components/quiz/QuizHeader";
-import { QuizNavigation } from "@/components/quiz/QuizNavigation";
+
+import { PRACTICE_BLOCK_SIZE } from "@/lib/exam-config";
 
 import {
-  getQuizSession,
   saveQuizSession,
   type QuizSession,
 } from "@/lib/quiz-session";
 
+import { useQuizSession } from "@/hooks/useQuizSession";
+
 export default function QuizPage() {
   const router = useRouter();
 
-  const [session, setSession] =
-    useState<QuizSession | null>(() => getQuizSession());
+  const session =
+    useQuizSession();
 
-  const [currentIndex, setCurrentIndex] =
-    useState(0);
+  const [
+    currentIndex,
+    setCurrentIndex,
+  ] = useState(0);
 
   const [direction, setDirection] =
     useState(1);
 
+  const [
+    overviewOpen,
+    setOverviewOpen,
+  ] = useState(false);
+
+  const [
+    celebrationOpen,
+    setCelebrationOpen,
+  ] = useState(false);
+
+  const [
+    celebrationCompleted,
+    setCelebrationCompleted,
+  ] = useState(0);
+
+  const [
+    celebrationCorrect,
+    setCelebrationCorrect,
+  ] = useState<number | undefined>(undefined);
+
   if (!session) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f7f8fa] px-5">
-        <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm">
-          <div className="text-4xl">🚗</div>
-
-          <h1 className="mt-4 text-xl font-black text-slate-950">
-            No hay un quiz activo
-          </h1>
-
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            Vuelve al inicio y selecciona una práctica o
-            simulacro para comenzar.
-          </p>
-
-          <button
-            type="button"
-            onClick={() => router.replace("/")}
-            className="mt-6 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-slate-800"
-          >
-            Volver al inicio
-          </button>
-        </div>
-      </main>
+      <AppLoading message="Preparando tu práctica..." />
     );
   }
 
-  const currentSession = session;
+  const currentSession =
+    session;
+
+  const question =
+    currentSession.questions[
+      currentIndex
+    ];
+
+  const selectedAnswers =
+    currentSession.answers[
+      question.id
+    ] ?? [];
 
   const answeredCount =
     currentSession.questions.filter(
-      (question) =>
-        (currentSession.answers[question.id]?.length ?? 0) > 0
+      (item) =>
+        (currentSession.answers[
+          item.id
+        ]?.length ?? 0) > 0
     ).length;
 
-  const question =
-    currentSession.questions[currentIndex];
+  const total =
+    currentSession.questions.length;
 
-  const selectedAnswers =
-    currentSession.answers[question.id] ?? [];
+  const isExam =
+    currentSession.mode === "exam";
 
   function updateAnswers(
     questionId: string,
@@ -73,7 +93,8 @@ export default function QuizPage() {
   ) {
     const targetQuestion =
       currentSession.questions.find(
-        (item) => item.id === questionId
+        (item) =>
+          item.id === questionId
       );
 
     if (!targetQuestion) {
@@ -81,42 +102,56 @@ export default function QuizPage() {
     }
 
     const currentAnswers =
-      currentSession.answers[questionId] ?? [];
+      currentSession.answers[
+        questionId
+      ] ?? [];
 
-    let nextAnswers: string[];
+    const nextAnswers =
+      targetQuestion.type ===
+      "single"
+        ? [optionId]
+        : currentAnswers.includes(
+              optionId
+            )
+          ? currentAnswers.filter(
+              (answer) =>
+                answer !==
+                optionId
+            )
+          : [
+              ...currentAnswers,
+              optionId,
+            ];
 
-    if (targetQuestion.type === "single") {
-      nextAnswers = [optionId];
-    } else {
-      nextAnswers = currentAnswers.includes(optionId)
-        ? currentAnswers.filter(
-            (answer) => answer !== optionId
-          )
-        : [...currentAnswers, optionId];
-    }
+    const nextSession: QuizSession =
+      {
+        ...currentSession,
 
-    const nextSession: QuizSession = {
-      ...currentSession,
-      answers: {
-        ...currentSession.answers,
-        [questionId]: nextAnswers,
-      },
-    };
+        answers: {
+          ...currentSession.answers,
 
-    setSession(nextSession);
+          [questionId]:
+            nextAnswers,
+        },
+      };
+
     saveQuizSession(nextSession);
   }
 
-  function goTo(index: number) {
+  function goTo(
+    index: number
+  ) {
     if (
       index < 0 ||
-      index >= currentSession.questions.length
+      index >= total
     ) {
       return;
     }
 
     setDirection(
-      index >= currentIndex ? 1 : -1
+      index >= currentIndex
+        ? 1
+        : -1
     );
 
     setCurrentIndex(index);
@@ -127,50 +162,125 @@ export default function QuizPage() {
     });
   }
 
+  function openMilestone(
+    completed: number
+  ) {
+    setCelebrationCompleted(completed);
+
+    if (completed >= total) {
+      const correct = currentSession.questions.filter((q) =>
+        isAnswerCorrect(q, currentSession.answers[q.id] ?? [])
+      ).length;
+      setCelebrationCorrect(correct);
+    } else {
+      setCelebrationCorrect(undefined);
+    }
+
+    setCelebrationOpen(true);
+  }
+
   function handleNext() {
+    const completed =
+      currentIndex + 1;
+
+    const isBlockEnd =
+      completed %
+        PRACTICE_BLOCK_SIZE ===
+      0;
+
+    if (
+      !isExam &&
+      isBlockEnd
+    ) {
+      openMilestone(completed);
+      return;
+    }
+
     goTo(currentIndex + 1);
   }
 
-  function handlePrevious() {
-    goTo(currentIndex - 1);
+  function handleCelebrationContinue() {
+    setCelebrationOpen(false);
+
+    if (
+      celebrationCompleted >=
+      total
+    ) {
+      handleSubmit();
+      return;
+    }
+
+    goTo(
+      celebrationCompleted
+    );
+  }
+
+  function handleLastQuestion() {
+    if (!isExam) {
+      openMilestone(total);
+      return;
+    }
+
+    handleSubmit();
   }
 
   function handleSubmit() {
     const unanswered =
       currentSession.questions.filter(
         (item) =>
-          (currentSession.answers[item.id]?.length ?? 0) === 0
+          (currentSession.answers[
+            item.id
+          ]?.length ?? 0) === 0
       ).length;
 
     if (unanswered > 0) {
       const message =
         unanswered === 1
-          ? "Te queda 1 pregunta sin responder. ¿Quieres enviarlo igualmente?"
-          : `Te quedan ${unanswered} preguntas sin responder. ¿Quieres enviarlo igualmente?`;
+          ? "Te queda 1 pregunta sin responder. ¿Quieres finalizar igualmente?"
+          : `Te quedan ${unanswered} preguntas sin responder. ¿Quieres finalizar igualmente?`;
 
-      if (!window.confirm(message)) {
+      if (
+        !window.confirm(message)
+      ) {
         return;
       }
     }
 
-    saveQuizSession(currentSession);
+    const submittedSession: QuizSession = {
+      ...currentSession,
+      submittedAt:
+        new Date().toISOString(),
+    };
+
+    saveQuizSession(
+      submittedSession
+    );
+
     router.push("/results");
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f8fa]">
+    <main className="min-h-screen bg-[#f8fafc]">
       <QuizHeader
-        title={currentSession.title}
-        current={currentIndex + 1}
-        total={currentSession.questions.length}
+        title={
+          currentSession.title
+        }
+        current={
+          currentIndex + 1
+        }
+        total={total}
         answered={answeredCount}
       />
 
-      <div className="mx-auto max-w-4xl px-5 pb-16 pt-8 sm:px-8 sm:pt-12">
+      <div className="mx-auto min-h-[calc(100dvh-180px)] max-w-[760px] px-5 pb-8 pt-5 sm:px-8 sm:pb-10 sm:pt-10">
         <QuestionCard
           question={question}
-          questionNumber={currentIndex + 1}
-          selectedAnswers={selectedAnswers}
+          questionNumber={
+            currentIndex + 1
+          }
+          selectedAnswers={
+            selectedAnswers
+          }
           direction={direction}
           onAnswer={(optionId) =>
             updateAnswers(
@@ -179,26 +289,55 @@ export default function QuizPage() {
             )
           }
         />
-
-        <QuizNavigation
-          currentIndex={currentIndex}
-          total={currentSession.questions.length}
-          hasAnswer={selectedAnswers.length > 0}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          onSubmit={handleSubmit}
-        />
-
-        <QuestionNavigator
-          total={currentSession.questions.length}
-          currentIndex={currentIndex}
-          answers={currentSession.answers}
-          questionIds={currentSession.questions.map(
-            (item) => item.id
-          )}
-          onSelect={goTo}
-        />
       </div>
+
+      <QuizFooter
+        currentIndex={
+          currentIndex
+        }
+        total={total}
+        hasAnswer={
+          selectedAnswers.length > 0
+        }
+        answered={answeredCount}
+        onPrevious={() =>
+          goTo(
+            currentIndex - 1
+          )
+        }
+        onNext={handleNext}
+        onSubmit={
+          handleLastQuestion
+        }
+        onOpenOverview={() =>
+          setOverviewOpen(true)
+        }
+      />
+
+      <QuestionOverview
+        open={overviewOpen}
+        currentIndex={
+          currentIndex
+        }
+        questionIds={currentSession.questions.map(
+          (item) => item.id
+        )}
+        answers={
+          currentSession.answers
+        }
+        onClose={() =>
+          setOverviewOpen(false)
+        }
+        onSelect={goTo}
+      />
+
+      <BlockCelebration
+        open={celebrationOpen}
+        completed={celebrationCompleted}
+        total={total}
+        correctCount={celebrationCorrect}
+        onContinue={handleCelebrationContinue}
+      />
     </main>
   );
 }

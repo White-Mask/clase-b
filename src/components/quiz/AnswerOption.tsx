@@ -11,7 +11,14 @@ type AnswerOptionProps = {
   onClick: () => void;
 };
 
-const letters = ["A", "B", "C", "D", "E", "F"];
+const letters = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+];
 
 export function AnswerOption({
   id,
@@ -22,7 +29,9 @@ export function AnswerOption({
 }: AnswerOptionProps) {
   const letterIndex =
     id.length === 1
-      ? id.toLowerCase().charCodeAt(0) - 97
+      ? id
+          .toLowerCase()
+          .charCodeAt(0) - 97
       : -1;
 
   const letter =
@@ -35,39 +44,75 @@ export function AnswerOption({
     <motion.button
       type="button"
       onClick={onClick}
-      whileTap={{ scale: 0.985 }}
+      whileHover={{
+        y: selected ? -1 : -2,
+      }}
+      whileTap={{
+        y: 3,
+        scale: 0.985,
+      }}
       animate={
         selected
-          ? { scale: [1, 1.015, 1] }
-          : { scale: 1 }
+          ? {
+              scale: [
+                1,
+                1.015,
+                1,
+              ],
+            }
+          : {
+              scale: 1,
+            }
       }
-      transition={{ duration: 0.2 }}
-      className={`group flex w-full items-center gap-4 rounded-[22px] border-2 p-4 text-left transition sm:p-5 ${
+      transition={{
+        duration: 0.18,
+      }}
+      aria-pressed={selected}
+      className={`flex min-h-[68px] w-full items-center gap-3 rounded-[20px] border-2 p-3.5 text-left transition sm:min-h-[76px] sm:gap-4 sm:rounded-[22px] sm:p-4 ${
         selected
-          ? "border-blue-600 bg-blue-50 shadow-sm"
-          : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+          ? "border-blue-500 bg-blue-50 shadow-[0_4px_0_#93c5fd]"
+          : "border-slate-200 bg-white shadow-[0_4px_0_#e2e8f0] hover:border-slate-300"
       }`}
     >
       <div
-        className={`flex h-11 w-11 shrink-0 items-center justify-center font-black transition ${
+        className={`flex h-10 w-10 shrink-0 items-center justify-center text-sm font-black transition sm:h-11 sm:w-11 ${
           multiple
             ? "rounded-xl"
             : "rounded-full"
         } ${
           selected
             ? "bg-blue-600 text-white"
-            : "bg-slate-100 text-slate-500 group-hover:bg-slate-200"
+            : "bg-slate-100 text-slate-500"
         }`}
       >
         {selected ? (
-          <Check size={20} strokeWidth={3} />
+          <motion.div
+            initial={{
+              scale: 0,
+              rotate: -20,
+            }}
+            animate={{
+              scale: 1,
+              rotate: 0,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 16,
+            }}
+          >
+            <Check
+              size={18}
+              strokeWidth={3}
+            />
+          </motion.div>
         ) : (
           letter
         )}
       </div>
 
       <span
-        className={`min-w-0 flex-1 text-sm font-bold leading-6 sm:text-[15px] ${
+        className={`min-w-0 flex-1 text-[14px] font-bold leading-[1.45] sm:text-[15px] sm:leading-6 ${
           selected
             ? "text-blue-950"
             : "text-slate-700"

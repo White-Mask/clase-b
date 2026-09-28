@@ -1,7 +1,10 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
-import { CheckSquare2, CircleDot } from "lucide-react";
+import {
+  AnimatePresence,
+  motion,
+} from "motion/react";
+import { CheckSquare2 } from "lucide-react";
 
 import type { Question } from "@/types/question";
 import { AnswerOption } from "@/components/quiz/AnswerOption";
@@ -21,82 +24,102 @@ export function QuestionCard({
   direction,
   onAnswer,
 }: QuestionCardProps) {
-  const multiple = question.type === "multiple";
+  const multiple =
+    question.type === "multiple";
 
   return (
-    <AnimatePresence mode="wait" custom={direction}>
-      <motion.div
+    <AnimatePresence
+      mode="wait"
+      custom={direction}
+    >
+      <motion.section
         key={question.id}
         custom={direction}
         variants={{
-          enter: (value: number) => ({
+          enter: (
+            value: number
+          ) => ({
             opacity: 0,
-            x: value >= 0 ? 40 : -40,
+            x:
+              value >= 0
+                ? 40
+                : -40,
           }),
+
           center: {
             opacity: 1,
             x: 0,
           },
-          exit: (value: number) => ({
+
+          exit: (
+            value: number
+          ) => ({
             opacity: 0,
-            x: value >= 0 ? -40 : 40,
+            x:
+              value >= 0
+                ? -40
+                : 40,
           }),
         }}
         initial="enter"
         animate="center"
         exit="exit"
         transition={{
-          duration: 0.22,
+          duration: 0.2,
           ease: "easeOut",
         }}
       >
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <span className="rounded-full bg-slate-900 px-3 py-1.5 text-xs font-extrabold text-white">
-            Pregunta {questionNumber}
-          </span>
+        <div className="mb-5 sm:mb-7">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[11px] font-black uppercase tracking-[0.14em] text-blue-600 sm:text-xs">
+              Pregunta {questionNumber}
+            </span>
 
-          <span className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
-            {multiple ? (
-              <>
-                <CheckSquare2 size={15} />
-                Selección múltiple
-              </>
-            ) : (
-              <>
-                <CircleDot size={15} />
-                Una alternativa
-              </>
+            {question.points === 2 && (
+              <span className="rounded-full bg-violet-100 px-2.5 py-1 text-[10px] font-black text-violet-600 sm:px-3 sm:py-1.5">
+                2 puntos
+              </span>
             )}
-          </span>
-        </div>
-
-        <h1 className="text-2xl font-black leading-[1.25] tracking-[-0.025em] text-slate-950 sm:text-3xl">
-          {question.question}
-        </h1>
-
-        {multiple && (
-          <div className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-xs font-semibold leading-5 text-amber-800">
-            Esta pregunta puede tener más de una
-            respuesta correcta. Selecciona todas las
-            que correspondan.
           </div>
-        )}
 
-        <div className="mt-8 grid gap-3">
-          {question.options.map((option) => (
-            <AnswerOption
-              key={option.id}
-              id={option.id}
-              text={option.text}
-              selected={selectedAnswers.includes(
-                option.id
-              )}
-              multiple={multiple}
-              onClick={() => onAnswer(option.id)}
-            />
-          ))}
+          <h1 className="mt-3 text-[24px] font-black leading-[1.24] tracking-[-0.035em] text-slate-950 min-[390px]:text-[26px] sm:mt-4 sm:text-[32px]">
+            {question.question}
+          </h1>
+
+          {multiple && (
+            <div className="mt-4 flex items-start gap-2 rounded-2xl bg-amber-50 px-3.5 py-3 text-xs font-bold leading-5 text-amber-700 sm:px-4">
+              <CheckSquare2
+                size={16}
+                className="mt-0.5 shrink-0"
+              />
+
+              <span>
+                Puede haber más de una
+                respuesta correcta.
+              </span>
+            </div>
+          )}
         </div>
-      </motion.div>
+
+        <div className="grid gap-3">
+          {question.options.map(
+            (option) => (
+              <AnswerOption
+                key={option.id}
+                id={option.id}
+                text={option.text}
+                selected={selectedAnswers.includes(
+                  option.id
+                )}
+                multiple={multiple}
+                onClick={() =>
+                  onAnswer(option.id)
+                }
+              />
+            )
+          )}
+        </div>
+      </motion.section>
     </AnimatePresence>
   );
 }

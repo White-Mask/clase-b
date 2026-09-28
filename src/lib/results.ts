@@ -12,25 +12,27 @@ export type QuestionResult = {
 };
 
 export type QuizResultSummary = {
-  questions: QuestionResult[];
+  mode: QuizSession["mode"];
+  title: string;
 
+  totalQuestions: number;
   correctQuestions: number;
   incorrectQuestions: number;
-  unansweredQuestions: number;
 
   score: number;
   maxScore: number;
-
   percentage: number;
 
   isFullOfficialSimulation: boolean;
   passed: boolean | null;
+
+  questions: QuestionResult[];
 };
 
 export function buildQuizResult(
   session: QuizSession
 ): QuizResultSummary {
-  const questionResults: QuestionResult[] =
+  const questionResults =
     session.questions.map((question) => {
       const selectedAnswers =
         session.answers[question.id] ?? [];
@@ -52,21 +54,6 @@ export function buildQuizResult(
       };
     });
 
-  const correctQuestions =
-    questionResults.filter(
-      (item) => item.correct
-    ).length;
-
-  const unansweredQuestions =
-    questionResults.filter(
-      (item) =>
-        item.selectedAnswers.length === 0
-    ).length;
-
-  const incorrectQuestions =
-    session.questions.length -
-    correctQuestions;
-
   const score = questionResults.reduce(
     (total, item) =>
       total + item.earnedPoints,
@@ -80,6 +67,15 @@ export function buildQuizResult(
       0
     );
 
+  const correctQuestions =
+    questionResults.filter(
+      (item) => item.correct
+    ).length;
+
+  const incorrectQuestions =
+    session.questions.length -
+    correctQuestions;
+
   const percentage =
     maxScore === 0
       ? 0
@@ -87,11 +83,21 @@ export function buildQuizResult(
           (score / maxScore) * 100
         );
 
+  const doublePointQuestions =
+    session.questions.filter(
+      (question) =>
+        question.points === 2
+    ).length;
+
   const isFullOfficialSimulation =
     session.mode === "exam" &&
+    session.exam?.isComplete === true &&
     session.questions.length ===
       CLASS_B_EXAM.questionCount &&
-    maxScore === CLASS_B_EXAM.maxScore;
+    maxScore ===
+      CLASS_B_EXAM.maxScore &&
+    doublePointQuestions ===
+      CLASS_B_EXAM.doublePointQuestions;
 
   const passed =
     isFullOfficialSimulation
@@ -100,18 +106,22 @@ export function buildQuizResult(
       : null;
 
   return {
-    questions: questionResults,
+    mode: session.mode,
+    title: session.title,
+
+    totalQuestions:
+      session.questions.length,
 
     correctQuestions,
     incorrectQuestions,
-    unansweredQuestions,
 
     score,
     maxScore,
-
     percentage,
 
     isFullOfficialSimulation,
     passed,
+
+    questions: questionResults,
   };
 }

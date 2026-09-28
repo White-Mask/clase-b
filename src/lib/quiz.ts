@@ -13,10 +13,16 @@ export function shuffle<T>(items: T[]): T[] {
 }
 
 export function shuffleQuestionOptions(question: Question): Question {
-  return {
-    ...question,
-    options: shuffle(question.options),
-  };
+  const labels = ["a", "b", "c", "d"];
+  const shuffled = shuffle(question.options);
+  const idRemap: Record<string, string> = {};
+  const newOptions = shuffled.map((opt, i) => {
+    const newId = labels[i] ?? opt.id;
+    idRemap[opt.id] = newId;
+    return { ...opt, id: newId };
+  });
+  const newCorrectAnswers = question.correctAnswers.map((id) => idRemap[id] ?? id);
+  return { ...question, options: newOptions, correctAnswers: newCorrectAnswers };
 }
 
 export function createQuiz(

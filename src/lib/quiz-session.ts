@@ -11,37 +11,94 @@ export type QuizSession = {
   mode: QuizSessionMode;
   title: string;
   questions: Question[];
-  answers: Record<string, string[]>;
+  answers: Record<
+    string,
+    string[]
+  >;
   startedAt: string;
+  submittedAt?: string;
+
+  exam?: {
+    isComplete: boolean;
+  };
 };
 
-const SESSION_KEY = "clase-b-current-quiz";
+const SESSION_KEY =
+  "clase-b-current-quiz";
 
-export function saveQuizSession(session: QuizSession): void {
-  if (typeof window === "undefined") return;
+const SESSION_EVENT =
+  "clase-b-quiz-session-change";
+
+function notifySessionChange() {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return;
+  }
+
+  window.dispatchEvent(
+    new Event(SESSION_EVENT)
+  );
+}
+
+export function saveQuizSession(
+  session: QuizSession
+): void {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return;
+  }
 
   sessionStorage.setItem(
     SESSION_KEY,
     JSON.stringify(session)
   );
+
+  notifySessionChange();
 }
 
-export function getQuizSession(): QuizSession | null {
-  if (typeof window === "undefined") return null;
+export function getQuizSession():
+  | QuizSession
+  | null {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return null;
+  }
 
   try {
-    const value = sessionStorage.getItem(SESSION_KEY);
+    const value =
+      sessionStorage.getItem(
+        SESSION_KEY
+      );
 
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
 
-    return JSON.parse(value) as QuizSession;
+    return JSON.parse(
+      value
+    ) as QuizSession;
   } catch {
     return null;
   }
 }
 
 export function clearQuizSession(): void {
-  if (typeof window === "undefined") return;
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return;
+  }
 
-  sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(
+    SESSION_KEY
+  );
+
+  notifySessionChange();
 }
