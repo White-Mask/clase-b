@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const repo = "clase-b-quiz";
+const repo = "clase-b";
 
 const nextConfig: NextConfig = {
   output: "export",
