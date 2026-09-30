@@ -1,10 +1,91 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen, Volume2, Square } from "lucide-react";
 import { ConfidenceRating } from "@/components/flashcards/ConfidenceRating";
 import type { FlashCard } from "@/lib/flashcards";
+
+// Preferred voice names in priority order (macOS/iOS native, then Chrome Google)
+const PREFERRED_VOICES = [
+  "Mónica",      // macOS es-ES — very natural
+  "Paulina",     // macOS es-MX — very natural
+  "Soledad",     // macOS es-ES alt
+  "Jorge",       // macOS es-ES male
+  "Google español de Estados Unidos", // Chrome neural
+  "Google español",                   // Chrome
+];
+
+function pickSpanishVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+  for (const name of PREFERRED_VOICES) {
+    const v = voices.find((v) => v.name === name);
+    if (v) return v;
+  }
+  // Fallback: any local es-* voice, then any es-* voice
+  return (
+    voices.find((v) => v.localService && v.lang.startsWith("es")) ??
+    voices.find((v) => v.lang.startsWith("es")) ??
+    null
+  );
+}
+
+function useTTS(segments: string[]) {
+  const [speaking, setSpeaking] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!("speechSynthesis" in window)) return;
+    const load = () => setVoices(window.speechSynthesis.getVoices());
+    load();
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () => window.speechSynthesis.removeEventListener("voiceschanged", load);
+  }, []);
+
+  const stop = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    window.speechSynthesis.cancel();
+    setSpeaking(false);
+  }, []);
+
+  const speak = useCallback(() => {
+    if (!("speechSynthesis" in window)) return;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    window.speechSynthesis.cancel();
+
+    const voice = pickSpanishVoice(voices);
+    let i = 0;
+    setSpeaking(true);
+
+    function next() {
+      if (i >= segments.length) { setSpeaking(false); return; }
+      const utt = new SpeechSynthesisUtterance(segments[i]);
+      if (voice) utt.voice = voice;
+      utt.lang = voice?.lang ?? "es-CL";
+      utt.rate = 0.84;
+      utt.pitch = 1.0;
+      utt.onend = () => {
+        i++;
+        if (i < segments.length) {
+          timerRef.current = setTimeout(next, 1500);
+        } else {
+          setSpeaking(false);
+        }
+      };
+      utt.onerror = () => setSpeaking(false);
+      window.speechSynthesis.speak(utt);
+    }
+
+    next();
+  }, [segments, voices]);
+
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    window.speechSynthesis.cancel();
+  }, []);
+
+  return { speaking, speak, stop };
+}
 
 type Face = "front" | "back";
 type Phase = "idle" | "folding" | "unfolding";
@@ -143,17 +224,41 @@ function BackFace({
   onRate: (confidence: 1 | 2 | 3) => void;
   onSkip: () => void;
 }) {
+  const ttsSegments = [card.front, card.content, card.example].filter(
+    (s): s is string => Boolean(s)
+  );
+  const { speaking, speak, stop } = useTTS(ttsSegments);
+
   return (
     <div className="rounded-[24px] border-2 border-violet-200 bg-white">
-      {/* Flip back row */}
-      <button
-        type="button"
-        onClick={onFlipBack}
-        className="flex w-full items-center gap-1.5 px-5 py-3 text-left text-[11px] font-bold text-slate-400 transition hover:text-violet-600"
-      >
-        <ArrowLeft size={12} strokeWidth={2.8} />
-        Ver pregunta
-      </button>
+      {/* Flip back row + TTS button */}
+      <div className="flex items-center justify-between px-5 py-3">
+        <button
+          type="button"
+          onClick={onFlipBack}
+          className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 transition hover:text-violet-600"
+        >
+          <ArrowLeft size={12} strokeWidth={2.8} />
+          Ver pregunta
+        </button>
+
+        <button
+          type="button"
+          onClick={speaking ? stop : speak}
+          aria-label={speaking ? "Detener lectura" : "Escuchar respuesta"}
+          className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${
+            speaking
+              ? "bg-violet-100 text-violet-600 hover:bg-violet-200"
+              : "text-slate-400 hover:bg-slate-100 hover:text-violet-600"
+          }`}
+        >
+          {speaking ? (
+            <Square size={14} strokeWidth={2.5} />
+          ) : (
+            <Volume2 size={15} strokeWidth={2.3} />
+          )}
+        </button>
+      </div>
 
       {/* Explanation */}
       <div className="border-t-2 border-slate-100 px-6 py-5 sm:px-7">
