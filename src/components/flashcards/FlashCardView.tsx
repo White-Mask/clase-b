@@ -116,17 +116,9 @@ function FrontFace({
       className="w-full cursor-pointer rounded-[24px] border-2 border-slate-200 bg-white text-left transition hover:border-violet-200 hover:bg-violet-50/40"
     >
       <div className="p-6 sm:p-7">
-        <p className="mb-3 text-[10px] font-black uppercase tracking-[0.16em] text-violet-500">
-          {card.topic.replace(/-/g, " ")}
-        </p>
-
         <h2 className="text-lg font-black leading-snug tracking-[-0.02em] text-slate-950 sm:text-xl">
-          {card.title}
-        </h2>
-
-        <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
           {card.front}
-        </p>
+        </h2>
 
         <div className="mt-6 flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-violet-200 bg-violet-50 py-3">
           <span className="text-[11px] font-black text-violet-500">
