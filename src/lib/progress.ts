@@ -119,12 +119,27 @@ export function getProgress():
     const parsed =
       JSON.parse(raw) as Partial<UserProgress>;
 
-    return {
-      ...EMPTY_PROGRESS,
-      ...parsed,
-      activeDays:
-        parsed.activeDays ?? [],
-    };
+    const progress: UserProgress =
+      {
+        ...EMPTY_PROGRESS,
+        ...parsed,
+        activeDays:
+          parsed.activeDays ?? [],
+      };
+
+    if (progress.lastActiveDate) {
+      const diff =
+        differenceInDays(
+          progress.lastActiveDate,
+          getLocalDateKey()
+        );
+
+      if (diff > 1) {
+        progress.currentStreak = 0;
+      }
+    }
+
+    return progress;
   } catch {
     return EMPTY_PROGRESS;
   }
